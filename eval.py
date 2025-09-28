@@ -3,7 +3,8 @@ import argparse, os, csv
 import numpy as np
 from vizdoom_env import make_vizdoom_env
 
-env = make_vizdoom_env(render=True)
+env = make_vizdoom_env(scenario="basic", render=True, reward_type="fast_kill")
+
 model = PPO.load("./models/ppo_vizdoom_basic")
 
 for ep in range(5):
@@ -15,5 +16,7 @@ for ep in range(5):
         obs, reward, terminated, truncated, info = env.step(action)
         total_reward += reward
         done = terminated or truncated
-    print(f"Episode {ep+1} reward: {total_reward}")
+
+    print(f"Episode {ep+1}: reward={total_reward:.2f}, time={info['time']:.4f}s, kills={info['kills']}")
+
 env.close()

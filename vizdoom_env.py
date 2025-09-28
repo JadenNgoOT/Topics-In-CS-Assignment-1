@@ -3,6 +3,7 @@ import vizdoom as vzd
 import numpy as np
 from gymnasium import spaces
 from collections import deque
+from reward_wrappers import FastKillRewardWrapper
 
 class VizDoomEnv(gym.Env):
     """Custom VizDoom environment wrapper for Gymnasium with built-in preprocessing"""
@@ -104,25 +105,30 @@ class VizDoomEnv(gym.Env):
     def step(self, action):
         # Execute action
         reward = self.game.make_action(self.actions[action])
-        
-        # Get new state
         done = self.game.is_episode_finished()
-        
+
         if not done:
             state = self.game.get_state()
             frame = self._preprocess_frame(state.screen_buffer)
         else:
-            # Use a blank frame if episode is done
             frame = np.zeros((self.frame_size, self.frame_size), dtype=np.uint8)
-        
-        # Add frame to stack
+
+        # Add to frame stack
         self.frames.append(frame)
-        
-        # Get stacked observation
         obs = self._get_observation()
-        
-        return obs, reward, done, False, {}
-    
+
+        # Build info dict with useful metrics
+        info = {
+            "kills": self.game.get_game_variable(vzd.GameVariable.KILLCOUNT),
+            "frags": self.game.get_game_variable(vzd.GameVariable.FRAGCOUNT),
+            "damage_dealt": self.game.get_game_variable(vzd.GameVariable.DAMAGECOUNT),
+            "health": self.game.get_game_variable(vzd.GameVariable.HEALTH),
+            "ammo": self.game.get_game_variable(vzd.GameVariable.AMMO2),
+            "time": self.game.get_episode_time() / 35.0  # seconds
+        }
+
+        return obs, reward, done, False, info
+
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         
@@ -141,9 +147,17 @@ class VizDoomEnv(gym.Env):
     def close(self):
         self.game.close()
 
-def make_vizdoom_env(scenario="basic", render=False):
-    """Create VizDoom environment with built-in preprocessing"""
-    return VizDoomEnv(scenario=scenario, render=render, frame_stack=4, frame_size=84)
+def make_vizdoom_env(scenario="basic", render=False, reward_type="default"):
+    env = VizDoomEnv(scenario=scenario, render=render, frame_stack=4, frame_size=84)
+
+    # Plug in reward shaping dynamically
+    if reward_type == "fast_kill":
+        env = FastKillRewardWrapper(env)
+    # elif reward_type == "survival":
+    #     env = SurvivalRewardWrapper(env)
+    # add more as needed
+
+    return env
 
 # Example usage and testing
 if __name__ == "__main__":

@@ -7,7 +7,10 @@ def main():
     print("Creating VizDoom environment...")
     
     # Create environment
-    env = make_vizdoom_env(render=False)
+    scenario = "basic"          # change to "corridor", "defend_the_center", etc.
+    reward_type = "fast_kill"   # switch reward shaping dynamically
+
+    env = make_vizdoom_env(scenario=scenario, render=False, reward_type=reward_type)
     
     print(f"Observation space: {env.observation_space}")
     print(f"Action space: {env.action_space}")
