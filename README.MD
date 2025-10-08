@@ -1,4 +1,6 @@
-run ./setup.sh (downloads dependencies)
+./setup.sh (downloads dependencies)
+
+python3 -m venv .venv && source .venv/bin/activate (activates venv)
 
 python train.py --timesteps 1000000 (trains model)
 
