@@ -4,6 +4,7 @@ import numpy as np
 from gymnasium import spaces
 from collections import deque
 from reward_wrappers import FastKillRewardWrapper
+from metric_wrapper import MetricCollectorWrapper
 
 class VizDoomEnv(gym.Env):
     """Custom VizDoom environment wrapper for Gymnasium with built-in preprocessing"""
@@ -103,8 +104,8 @@ class VizDoomEnv(gym.Env):
         return np.stack(list(self.frames), axis=0).astype(np.uint8)
     
     def step(self, action):
-        # Execute action
-        reward = self.game.make_action(self.actions[action])
+        # Run the action
+        reward = self.game.make_action(self.actions[action], 4)
         done = self.game.is_episode_finished()
 
         if not done:
@@ -113,21 +114,20 @@ class VizDoomEnv(gym.Env):
         else:
             frame = np.zeros((self.frame_size, self.frame_size), dtype=np.uint8)
 
-        # Add to frame stack
         self.frames.append(frame)
         obs = self._get_observation()
 
-        # Build info dict with useful metrics
+        # Build info dict
         info = {
             "kills": self.game.get_game_variable(vzd.GameVariable.KILLCOUNT),
-            "frags": self.game.get_game_variable(vzd.GameVariable.FRAGCOUNT),
             "damage_dealt": self.game.get_game_variable(vzd.GameVariable.DAMAGECOUNT),
             "health": self.game.get_game_variable(vzd.GameVariable.HEALTH),
             "ammo": self.game.get_game_variable(vzd.GameVariable.AMMO2),
-            "time": self.game.get_episode_time() / 35.0  # seconds
         }
 
         return obs, reward, done, False, info
+
+
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -152,11 +152,14 @@ def make_vizdoom_env(scenario="basic", render=False, reward_type="default"):
 
     # Plug in reward shaping dynamically
     if reward_type == "fast_kill":
+        from reward_wrappers import FastKillRewardWrapper
         env = FastKillRewardWrapper(env)
     # elif reward_type == "survival":
     #     env = SurvivalRewardWrapper(env)
     # add more as needed
 
+    # ✅ Wrap with metric collector last (so it sees all rewards, time, etc.)
+    env = MetricCollectorWrapper(env)
     return env
 
 # Example usage and testing

@@ -17,6 +17,6 @@ for ep in range(5):
         total_reward += reward
         done = terminated or truncated
 
-    print(f"Episode {ep+1}: reward={total_reward:.2f}, time={info['time']:.4f}s, kills={info['kills']}")
+    print(f"Episode {ep+1}: reward={total_reward:.2f}, time={info['real_time']:.4f}s, kills={info['kills']}")
 
 env.close()
