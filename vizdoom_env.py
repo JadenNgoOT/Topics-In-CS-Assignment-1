@@ -46,6 +46,8 @@ class VizDoomEnv(gym.Env):
                 self.game.set_render_particles(False)
                 self.game.add_available_button(vzd.Button.MOVE_LEFT)
                 self.game.add_available_button(vzd.Button.MOVE_RIGHT)
+                self.game.add_available_button(vzd.Button.TURN_LEFT)
+                self.game.add_available_button(vzd.Button.TURN_RIGHT)
                 self.game.add_available_button(vzd.Button.ATTACK)
                 self.game.add_available_game_variable(vzd.GameVariable.AMMO2)
         
@@ -158,7 +160,7 @@ def make_vizdoom_env(scenario="basic", render=False, reward_type="default"):
     #     env = SurvivalRewardWrapper(env)
     # add more as needed
 
-    # ✅ Wrap with metric collector last (so it sees all rewards, time, etc.)
+    # Wrap with metric collector last (so it sees all rewards, time, etc.)
     env = MetricCollectorWrapper(env)
     return env
 
