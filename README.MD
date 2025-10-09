@@ -28,4 +28,4 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >
 >py train.py --timesteps 1000000 (trains the model)
 >
->py. eval.py --models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evaluates the model)
+>py eval.py --models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evaluates the model)
