@@ -13,9 +13,9 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >
 >python3 -m venv .venv && source .venv/bin/activate (activates venv)
 >
->python train.py --timesteps 1000000 (trains model)
+>python train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
 >
->python eval.py --/models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evals model)
+>python eval.py --/models ./models/[model name] --episodes [num of episodes] --render [render T/F (0/1)]
 
 #### How to run on Windows using py launcher
 >py -m pip install vizdoom gymnasium pygame (will create the txt folder later)
