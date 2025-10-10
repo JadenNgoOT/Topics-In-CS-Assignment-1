@@ -83,7 +83,7 @@ def main():
         for row in rows:
             writer.writerow(row)
 
-    print(f"✅ Saved metrics to {csv_path}")
+    print(f"Saved metrics to {csv_path}")
     env.close()
 
 if __name__ == "__main__":
