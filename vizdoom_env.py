@@ -5,6 +5,7 @@ from gymnasium import spaces
 from collections import deque
 from reward_wrappers import FastKillRewardWrapper
 from metric_wrapper import MetricCollectorWrapper
+from itertools import product
 
 class VizDoomEnv(gym.Env):
     """Custom VizDoom environment wrapper for Gymnasium with built-in preprocessing"""
@@ -61,14 +62,21 @@ class VizDoomEnv(gym.Env):
         
         # Initialize the game
         self.game.init()
+
+        #test line        
+        print("Available buttons:", [str(b) for b in self.game.get_available_buttons()])
+
         
         # Get available actions
         self.actions = []
-        n_actions = self.game.get_available_buttons_size()
-        for i in range(n_actions):
-            action = [False] * n_actions
-            action[i] = True
-            self.actions.append(action)
+        # Create all combinations of available buttons (0/1 for each)
+        button_count = self.game.get_available_buttons_size()
+        # Limit action explosion — only allow up to 2 simultaneous actions
+        self.actions = [
+            list(action) for action in product([0, 1], repeat=button_count)
+            if sum(action) <= 2 and sum(action) > 0
+        ]
+
         
         # Define action and observation spaces
         self.action_space = spaces.Discrete(len(self.actions))

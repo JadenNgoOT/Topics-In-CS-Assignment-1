@@ -52,11 +52,11 @@ class SurvivalRewardWrapper(gym.Wrapper):
         self,
         env,
         alive_bonus=0.02,
-        move_bonus=0.01,
+        move_bonus=0.02,
         damage_penalty=-0.1,
         death_penalty=-1.0,
         health_bonus=0.05,
-        idle_penalty=-0.01
+        idle_penalty=-0.02
     ):
         super().__init__(env)
         self.alive_bonus = alive_bonus
@@ -80,14 +80,13 @@ class SurvivalRewardWrapper(gym.Wrapper):
         return obs, info
 
     def _get_position(self):
-        """Estimate player position from VizDoom state variables."""
         if hasattr(self.env, "game"):
             state = self.env.game.get_state()
-            if state:
-                vars = state.game_variables
-                if len(vars) >= 2:
-                    return np.array(vars[:2])
+            if state and len(state.game_variables) >= 3:
+                # e.g., some scenarios: [posX, posY, posZ]
+                return np.array(state.game_variables[:2])
         return None
+
 
     def step(self, action):
         obs, base_reward, terminated, truncated, info = self.env.step(action)

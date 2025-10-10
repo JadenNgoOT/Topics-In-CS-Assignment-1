@@ -29,3 +29,6 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps] (trains the model)
 >
 >py eval.py --models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evaluates the model)
+
+##### Notes:
+>in .venv/lib/python3.12/site-packages/vizdoom/scenarios/defend_the_line.cfg add lines [MOVE_LEFT and MOVE_RIGHT] into the "available_buttons" list

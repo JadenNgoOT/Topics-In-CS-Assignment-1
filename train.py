@@ -59,11 +59,14 @@ def main():
         env=env,
         verbose=1,
         tensorboard_log=f"./logs_vizdoom/{args.scenario}",
-        n_steps=2048,
+        n_steps=1024,
         batch_size=64,
-        learning_rate=2.5e-4,
+        learning_rate=3e-4,
         gamma=0.99,
+        clip_range=0.2,
+        ent_coef=0.01,   # Encourages exploration
     )
+
 
     print("Starting training...")
     model.learn(total_timesteps=args.timesteps, progress_bar=True)
