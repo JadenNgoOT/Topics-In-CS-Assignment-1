@@ -18,7 +18,7 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >python eval.py --/models ./models/[model name] --episodes [num of episodes] --render [render T/F (0/1)]
 
 #### How to run on Windows using py launcher
->py -m pip install vizdoom gymnasium pygame (will create the txt folder later)
+>py -m pip install vizdoom gymnasium pygame tensorboard stable-baselines3[extra] (will create the txt folder later)
 >
 >py -m venv .venv (creates the venv)
 >
@@ -26,6 +26,6 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >
 >.venv\Scripts\activate (activates venv)
 >
->py train.py --timesteps 1000000 (trains the model)
+>py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps] (trains the model)
 >
 >py eval.py --models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evaluates the model)
