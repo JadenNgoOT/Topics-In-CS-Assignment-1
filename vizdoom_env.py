@@ -150,17 +150,18 @@ class VizDoomEnv(gym.Env):
         self.game.close()
 
 def make_vizdoom_env(scenario="basic", render=False, reward_type="default"):
-    env = VizDoomEnv(scenario=scenario, render=render, frame_stack=4, frame_size=84)
+    env = VizDoomEnv(scenario=scenario, render=render, frame_stack=4, frame_size=64)
 
     # Plug in reward shaping dynamically
     if reward_type == "fast_kill":
         from reward_wrappers import FastKillRewardWrapper
         env = FastKillRewardWrapper(env)
-    # elif reward_type == "survival":
-    #     env = SurvivalRewardWrapper(env)
-    # add more as needed
+    elif reward_type == "survival":
+        from reward_wrappers import SurvivalRewardWrapper
+        env = SurvivalRewardWrapper(env)
 
     # Wrap with metric collector last (so it sees all rewards, time, etc.)
+    from metric_wrapper import MetricCollectorWrapper
     env = MetricCollectorWrapper(env)
     return env
 

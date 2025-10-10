@@ -1,60 +1,50 @@
 import os
+import argparse
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
+from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
+import numpy as np
 from vizdoom_env import make_vizdoom_env
 
 def main():
-    print("Creating VizDoom environment...")
-    
-    # Create environment
-    scenario = "basic"          # change to "corridor", "defend_the_center", etc.
-    reward_type = "fast_kill"   # switch reward shaping dynamically
+    parser = argparse.ArgumentParser(description="Train a PPO agent in VizDoom")
+    parser.add_argument("--scenario", type=str, default="basic", help="Scenario name (e.g. basic, deadly_corridor, defend_the_center)")
+    parser.add_argument("--reward", type=str, default="fast_kill", help="Reward shaping type (e.g. fast_kill, default)")
+    parser.add_argument("--timesteps", type=int, default=200_000, help="Total training timesteps")
+    parser.add_argument("--render", action="store_true", help="Render VizDoom window during training")
+    args = parser.parse_args()
 
-    env = make_vizdoom_env(scenario=scenario, render=False, reward_type=reward_type)
-    
+    print(f"Creating VizDoom environment for scenario '{args.scenario}' with reward '{args.reward}'")
+
+    env = make_vizdoom_env(scenario=args.scenario, render=args.render, reward_type=args.reward)
+
     print(f"Observation space: {env.observation_space}")
     print(f"Action space: {env.action_space}")
-    
-    # Test environment reset
-    obs, info = env.reset()
-    print(f"Reset observation shape: {obs.shape}")
-    print(f"Observation dtype: {obs.dtype}")
-    print(f"Observation min/max: {obs.min()}/{obs.max()}")
-    
-    # Check if environment is valid
-    print("\nChecking environment...")
-    try:
-        check_env(env, warn=True)
-        print("Environment check passed!")
-    except Exception as e:
-        print(f"Environment check failed: {e}")
-        return
-    
-    print("\nCreating PPO model...")
-    
+
+    # Optional environment validation
+    check_env(env, warn=True)
+
     # Create model
     model = PPO(
-        policy="CnnPolicy",  # CNN for pixel input
+        policy="CnnPolicy",
         env=env,
         verbose=1,
-        tensorboard_log="./logs_vizdoom",
+        tensorboard_log=f"./logs_vizdoom/{args.scenario}",
         n_steps=2048,
         batch_size=64,
         learning_rate=2.5e-4,
         gamma=0.99,
     )
-    
-    print("Model created successfully!")
+
     print("Starting training...")
-    
-    # Train the model
-    model.learn(total_timesteps=100_000, progress_bar=True)  # Reduced for testing
-    
-    # Save the model
+    model.learn(total_timesteps=args.timesteps, progress_bar=True)
+
+    # Save model
     os.makedirs("./models", exist_ok=True)
-    model.save("./models/ppo_vizdoom_basic")
-    
-    print("Training completed and model saved!")
+    model_path = f"./models/ppo_vizdoom_{args.scenario}_{args.reward}.zip"
+    model.save(model_path)
+
+    print(f"Training completed and model saved at: {model_path}")
     env.close()
 
 if __name__ == "__main__":
