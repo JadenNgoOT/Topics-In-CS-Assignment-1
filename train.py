@@ -1,30 +1,59 @@
 import os
 import argparse
+import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
-import numpy as np
 from vizdoom_env import make_vizdoom_env
 
 def main():
     parser = argparse.ArgumentParser(description="Train a PPO agent in VizDoom")
-    parser.add_argument("--scenario", type=str, default="basic", help="Scenario name (e.g. basic, deadly_corridor, defend_the_center)")
-    parser.add_argument("--reward", type=str, default="fast_kill", help="Reward shaping type (e.g. fast_kill, default)")
-    parser.add_argument("--timesteps", type=int, default=200_000, help="Total training timesteps")
-    parser.add_argument("--render", action="store_true", help="Render VizDoom window during training")
+    parser.add_argument("--scenario", type=str, default="basic",
+                        help="Scenario name (e.g. basic, deadly_corridor, defend_the_center)")
+    parser.add_argument("--reward", type=str, default="fast_kill",
+                        help="Reward shaping type (e.g. fast_kill, survival, default)")
+    parser.add_argument("--timesteps", type=int, default=200_000,
+                        help="Total training timesteps")
+    parser.add_argument("--render", action="store_true",
+                        help="Render VizDoom window during training")
+    parser.add_argument("--num_envs", type=int, default=1,
+                        help="Number of parallel environments for vectorized training")
     args = parser.parse_args()
 
-    print(f"Creating VizDoom environment for scenario '{args.scenario}' with reward '{args.reward}'")
+    print(f"Creating {args.num_envs} VizDoom envs for scenario '{args.scenario}' with reward '{args.reward}'")
 
-    env = make_vizdoom_env(scenario=args.scenario, render=args.render, reward_type=args.reward)
+    # Factory function for each environment instance
+    def make_env(rank):
+        def _init():
+            env = make_vizdoom_env(scenario=args.scenario,
+                                   render=args.render if rank == 0 else False,
+                                   reward_type=args.reward)
+            # Use Gymnasium-style seeding
+            env.reset(seed=rank + np.random.randint(0, 10000))
+            return env
+        return _init
+
+    # Create multiple envs
+    if args.num_envs > 1:
+        env_fns = [make_env(i) for i in range(args.num_envs)]
+        try:
+            env = SubprocVecEnv(env_fns)
+        except Exception as e:
+            print(f"⚠️ SubprocVecEnv failed ({e}), falling back to DummyVecEnv.")
+            env = DummyVecEnv(env_fns)
+    else:
+        env = make_vizdoom_env(scenario=args.scenario,
+                               render=args.render,
+                               reward_type=args.reward)
 
     print(f"Observation space: {env.observation_space}")
     print(f"Action space: {env.action_space}")
 
-    # Optional environment validation
-    check_env(env, warn=True)
+    # Optional environment check (use only on single env)
+    if args.num_envs == 1:
+        check_env(env, warn=True)
 
-    # Create model
+    # Create PPO model
     model = PPO(
         policy="CnnPolicy",
         env=env,
@@ -41,10 +70,10 @@ def main():
 
     # Save model
     os.makedirs("./models", exist_ok=True)
-    model_path = f"./models/ppo_vizdoom_{args.scenario}_{args.reward}.zip"
+    model_path = f"./models/ppo_vizdoom_{args.scenario}_{args.reward}_n{args.num_envs}.zip"
     model.save(model_path)
 
-    print(f"Training completed and model saved at: {model_path}")
+    print(f"✅ Training completed and model saved at: {model_path}")
     env.close()
 
 if __name__ == "__main__":
