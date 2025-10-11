@@ -96,7 +96,7 @@ def main():
     csv_path = args.csv_out
 
     if args.csv_out == "logs/eval_metrics.csv":
-        csv_path = f"logs/eval_metrics_vizdoom_{args.scenario}_{args.reward}_seed{args.seed}.csv"
+        csv_path = f"logs/eval_metrics_vizdoom_{args.scenario}_{args.reward}.csv"
 
     with open(csv_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)

@@ -85,7 +85,7 @@ def main():
 
     # Save model
     os.makedirs("./models", exist_ok=True)
-    model_path = f"./models/ppo_vizdoom_{args.scenario}_{args.reward}_seed{args.seed}.zip"
+    model_path = f"./models/ppo_vizdoom_{args.scenario}_{args.reward}.zip"
     model.save(model_path)
 
     print(f"\nTraining completed and model saved at: {model_path}")
