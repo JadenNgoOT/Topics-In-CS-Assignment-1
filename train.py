@@ -61,10 +61,10 @@ def main():
         tensorboard_log=f"./logs_vizdoom/{args.scenario}",
         n_steps=1024,
         batch_size=64,
-        learning_rate=3e-4,
+        learning_rate=4.25e-4,
         gamma=0.99,
         clip_range=0.2,
-        ent_coef=0.01,   # Encourages exploration
+        ent_coef=0.02,   # Encourages exploration
     )
 
 
