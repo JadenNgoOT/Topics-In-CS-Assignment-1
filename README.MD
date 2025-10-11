@@ -15,7 +15,7 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >
 >python train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
 >
->optional train.py arguments: --render [render T/F (1/0)] --seed [000000] --num_envs [0-4]
+>optional train.py arguments: --render [render T/F (1/0)] --seed [000000] --num_envs [1-8]
 >
 >python eval.py --scenario [scenario] --reward [reward model] --episodes [num of episodes] 
 >
