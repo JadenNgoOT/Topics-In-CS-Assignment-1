@@ -1,74 +1,76 @@
-# metric_wrapper.py
 import gymnasium as gym
 import time
 import numpy as np
-import vizdoom as vzd
 
 class MetricCollectorWrapper(gym.Wrapper):
     """
-    Collects rich gameplay metrics for ViZDoom episodes.
-    Tracks real elapsed time, simulated time, time-to-kill, survival time,
-    and aggregates damage, kills, etc.
+    Collects universal metrics across all VizDoom scenarios:
+      - time_alive
+      - kills
+      - total_reward
+      - completion_time (if scenario is completable)
+      - health_remaining
     """
 
     def __init__(self, env):
         super().__init__(env)
         self.start_time = None
-        self.last_time = 0.0
-        self.kill_time = None
+        self.total_reward = 0.0
         self.prev_kills = 0
-        self.prev_damage = 0
+        self.prev_health = 0
+        self.last_time = 0.0
+        self.completed = False
+        self.completion_time = None
 
     def reset(self, **kwargs):
         obs, info = self.env.reset(**kwargs)
         self.start_time = time.time()
-        self.last_time = 0.0
-        self.kill_time = None
+        self.total_reward = 0.0
         self.prev_kills = 0
-        self.prev_damage = 0
+        self.prev_health = info.get("health", 100)
+        self.last_time = 0.0
+        self.completed = False
+        self.completion_time = None
         return obs, info
 
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(action)
 
-        # Update times
+        # Track elapsed time
         real_elapsed = time.time() - self.start_time
-        sim_time = self.env.game.get_episode_time() / 35.0 if hasattr(self.env, "game") else np.nan
+        self.total_reward += reward
 
-        # Get variables (safe fallback if missing)
+        # Collect info safely
         kills = info.get("kills", 0)
-        damage = info.get("damage_dealt", 0)
-        health = info.get("health", 0)
-        ammo = info.get("ammo", 0)
+        health = info.get("health", self.prev_health)
 
-        # Detect first kill and record kill_time
-        if self.kill_time is None and kills > self.prev_kills:
-            self.kill_time = real_elapsed
+        # Detect level completion
+        if terminated and not truncated:
+            self.completed = True
+            self.completion_time = real_elapsed
 
         # Update stored values
         self.prev_kills = kills
-        self.prev_damage = damage
+        self.prev_health = health
         self.last_time = real_elapsed
 
-        # Augment info with metrics
+        # Update info dictionary
         info.update({
-            "real_time": real_elapsed,
-            "sim_time": sim_time,
-            "time_to_kill": self.kill_time,
-            "survival_time": real_elapsed,
+            "time_alive": real_elapsed,
             "kills": kills,
-            "damage_dealt": damage,
-            "health": health,
-            "ammo": ammo,
+            "total_reward": self.total_reward,
+            "completion_time": self.completion_time,
+            "health_remaining": health,
         })
 
         return obs, reward, terminated, truncated, info
 
     def get_episode_summary(self):
-        """Return a summary dict for CSV logging (after an episode ends)."""
+        """Summary for CSV logging or evaluation"""
         return {
-            "time_to_kill": self.kill_time,
-            "survival_time": self.last_time,
-            "total_kills": self.prev_kills,
-            "total_damage": self.prev_damage,
+            "time_alive": self.last_time,
+            "kills": self.prev_kills,
+            "total_reward": self.total_reward,
+            "completion_time": self.completion_time,
+            "health_remaining": self.prev_health,
         }
