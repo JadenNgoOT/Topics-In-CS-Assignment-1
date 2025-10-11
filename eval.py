@@ -69,14 +69,15 @@ def main():
             "reward": total_reward,
             "kills": info.get("kills", 0),
             "health": info.get("health", 0),
-            "survival_time": summary.get("survival_time", np.nan),
+            "survival_time": summary.get("time_alive", np.nan), 
             "completion_time": summary.get("completion_time", np.nan),
         }
+
         rows.append(row)
 
         print(f"Episode {ep}: reward={row['reward']:.2f}, kills={row['kills']}, "
-              f"health={row['health']}, survival={row['survival_time']:.2f}s, "
-              f"complete={row['completion_time']:.2f}s")
+            f"health={row['health']}, survival={row['survival_time']:.2f}s, "
+            f"complete={row['completion_time']:.2f}s")
 
     # Compute averages
     mean_reward = np.mean([r["reward"] for r in rows])
