@@ -39,7 +39,7 @@ def main():
         try:
             env = SubprocVecEnv(env_fns)
         except Exception as e:
-            print(f"⚠️ SubprocVecEnv failed ({e}), falling back to DummyVecEnv.")
+            print(f"SubprocVecEnv failed ({e}), falling back to DummyVecEnv.")
             env = DummyVecEnv(env_fns)
     else:
         env = make_vizdoom_env(scenario=args.scenario,

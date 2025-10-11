@@ -20,37 +20,8 @@ class VizDoomEnv(gym.Env):
         # Initialize VizDoom game
         self.game = vzd.DoomGame()
         
-        # Set scenario configuration - try different approaches
-        try:
-            # Try loading config file first
-            if scenario == "basic":
-                self.game.load_config("basic.cfg")
-            else:
-                self.game.load_config(f"{scenario}.cfg")
-        except:
-            try:
-                # Try alternative path
-                import os
-                scenario_path = os.path.join(os.path.dirname(vzd.__file__), "scenarios", f"{scenario}.cfg")
-                self.game.load_config(scenario_path)
-            except:
-                # Manual setup for basic scenario as fallback
-                print("Setting up basic scenario manually...")
-                self.game.set_doom_scenario_path(vzd.scenarios_path + "/basic.wad")
-                self.game.set_doom_map("map01")
-                self.game.set_screen_resolution(vzd.ScreenResolution.RES_160X120)
-                self.game.set_screen_format(vzd.ScreenFormat.RGB24)
-                self.game.set_render_hud(False)
-                self.game.set_render_crosshair(False)
-                self.game.set_render_weapon(True)
-                self.game.set_render_decals(False)
-                self.game.set_render_particles(False)
-                self.game.add_available_button(vzd.Button.MOVE_LEFT)
-                self.game.add_available_button(vzd.Button.MOVE_RIGHT)
-                self.game.add_available_button(vzd.Button.TURN_LEFT)
-                self.game.add_available_button(vzd.Button.TURN_RIGHT)
-                self.game.add_available_button(vzd.Button.ATTACK)
-                self.game.add_available_game_variable(vzd.GameVariable.AMMO2)
+        # Set scenario configuration 
+        self.game.load_config(f"{scenario}.cfg")
         
         # Set render mode
         if render:
