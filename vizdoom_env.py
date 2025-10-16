@@ -33,11 +33,7 @@ class VizDoomEnv(gym.Env):
         
         # Initialize the game
         self.game.init()
-
-        #test line        
-        print("Available buttons:", [str(b) for b in self.game.get_available_buttons()])
-
-        
+    
         # Get available actions
         self.actions = []
         # Create all combinations of available buttons (0/1 for each)

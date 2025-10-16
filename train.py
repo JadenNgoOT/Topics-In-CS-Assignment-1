@@ -58,9 +58,6 @@ def main():
                                reward_type=args.reward)
         env.reset(seed=args.seed)
 
-    print(f"Observation space: {env.observation_space}")
-    print(f"Action space: {env.action_space}")
-
     # Optional environment validation
     if args.num_envs == 1:
         check_env(env, warn=True)
