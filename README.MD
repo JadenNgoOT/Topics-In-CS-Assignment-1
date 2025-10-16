@@ -13,13 +13,13 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >
 >python3 -m venv .venv && source .venv/bin/activate (activates venv)
 >
+>Training:
 >python train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
+>optionals: train.py arguments: --render [render T/F (1/0)] --seed [000000] --num_envs [1-8]
 >
->optional train.py arguments: --render [render T/F (1/0)] --seed [000000] --num_envs [1-8]
->
+>Evaluation:
 >python eval.py --scenario [scenario] --reward [reward model] --episodes [num of episodes] 
->
->>optional eval.py arguments: --render [render T/F (1/0)] --seed [000000] --csv_out [/output_path]
+>optionals: eval.py arguments: --render [render T/F (1/0)] --seed [000000] --csv_out [/output_path]
 
 #### How to run on Windows using py launcher
 >py -m pip install vizdoom gymnasium pygame tensorboard stable-baselines3[extra] (will create the txt folder later)
@@ -35,4 +35,4 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >py eval.py --models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evaluates the model)
 
 ##### Notes:
->in .venv/lib/python3.12/site-packages/vizdoom/scenarios/defend_the_line.cfg add lines [MOVE_LEFT and MOVE_RIGHT] and remove lines [TURN_LEFT and TURN_RIGHT] from the "available_buttons" list
+>in .venv/lib/python3.12/site-packages/vizdoom/scenarios replace defend_the_line and deadly_corridor files with the ones provided
