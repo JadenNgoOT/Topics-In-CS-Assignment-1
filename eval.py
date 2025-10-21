@@ -4,6 +4,7 @@ import csv
 import numpy as np
 from stable_baselines3 import PPO
 from vizdoom_env import make_vizdoom_env
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -105,6 +106,47 @@ def main():
 
     print(f"\nMetrics saved to: {csv_path}")
     env.close()
+    
+    episodes = np.array([r["episode"] for r in rows])
+    rewards = np.array([r["reward"] for r in rows])
+    kills = np.array([r["kills"] for r in rows])
+    health = np.array([r["health"] for r in rows])
+    survival = np.array([r["survival_time"] for r in rows])
+
+    # Create figure
+    plt.figure(figsize=(10, 6))
+
+    # Plot rewards
+    plt.subplot(2, 2, 1)
+    plt.plot(episodes, rewards, marker='o')
+    plt.title("Episode Rewards")
+    plt.xlabel("Episode")
+    plt.ylabel("Reward")
+
+    # Plot kills
+    plt.subplot(2, 2, 2)
+    plt.bar(episodes, kills, color='orange')
+    plt.title("Kills per Episode")
+    plt.xlabel("Episode")
+    plt.ylabel("Kills")
+
+    # Plot health
+    plt.subplot(2, 2, 3)
+    plt.plot(episodes, health, marker='x', color='green')
+    plt.title("Final Health per Episode")
+    plt.xlabel("Episode")
+    plt.ylabel("Health")
+
+    # Plot survival time
+    plt.subplot(2, 2, 4)
+    plt.plot(episodes, survival, marker='s', color='purple')
+    plt.title("Survival Time per Episode")
+    plt.xlabel("Episode")
+    plt.ylabel("Seconds")
+
+    plt.tight_layout()
+    plt.suptitle(f"VizDoom Evaluation — {args.scenario} ({args.reward})", fontsize=14, y=1.03)
+    plt.show()
 
 
 if __name__ == "__main__":
