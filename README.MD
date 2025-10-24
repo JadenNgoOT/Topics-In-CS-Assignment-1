@@ -5,6 +5,8 @@
 #### Summary
 This project trains an AI to play DOOM using Vizdoom which develops the AI by using only visual information.
 
+![defend_the_line](./media/defend.gif)
+![deadlya_corridor](./media/deadly.gif)
 #### Installation 
 For a guide on how to install vizdoom you can go here https://github.com/Farama-Foundation/ViZDoom
 
@@ -31,7 +33,7 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >.venv\Scripts\activate (activates venv)
 >
 >Training:
->py train.py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
+>py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
 >optionals: train.py arguments: --render [render T/F (1/0)] --seed [000000] --num_envs [1-8]
 >
 >Evaluation:
@@ -44,6 +46,17 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >python3 -m venv .venv && source .venv/bin/activate (activates venv)
 >
 >python eval.py --scenario defend_the_line --reward kill_fast --episodes 5 --render 1 
+
+#### to run the already trained models on Windows
+>downloads dependencies
+>
+>py -m venv .venv 
+>
+>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+>
+>.venv\Scripts\activate
+>
+>py eval.py --scenario defend_the_line --reward kill_fast --episodes 5 --render 1
 
 
 ##### Notes:
