@@ -30,9 +30,21 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >
 >.venv\Scripts\activate (activates venv)
 >
->py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps] (trains the model)
+>Training:
+>py train.py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
+>optionals: train.py arguments: --render [render T/F (1/0)] --seed [000000] --num_envs [1-8]
 >
->py eval.py --models ./models/ppo_vizdoom_basic --episodes 5 --render 1 (evaluates the model)
+>Evaluation:
+>py eval.py --scenario [scenario] --reward [reward model] --episodes [num of episodes] 
+>optionals: eval.py arguments: --render [render T/F (1/0)] --seed [000000] --csv_out [/output_path]
+
+#### to run the already trained models on WSL/Linux
+>./setup.sh (downloads dependencies)
+>
+>python3 -m venv .venv && source .venv/bin/activate (activates venv)
+>
+>python eval.py --scenario defend_the_line --reward kill_fast --episodes 5 --render 1 
+
 
 ##### Notes:
 >in .venv/lib/python3.12/site-packages/vizdoom/scenarios replace defend_the_line and deadly_corridor files with the ones provided
