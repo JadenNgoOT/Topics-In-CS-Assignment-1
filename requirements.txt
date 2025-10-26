@@ -1,0 +1,1 @@
+py -m pip install gymnasium stable-baselines3[extra] vizdoom[gym] tensorboard numpy

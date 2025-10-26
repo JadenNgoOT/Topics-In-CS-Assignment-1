@@ -24,13 +24,14 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >optionals: eval.py arguments: --render [render T/F (1/0)] --seed [000000] --csv_out [/output_path]
 
 #### How to run on Windows using py launcher
->py -m pip install vizdoom gymnasium pygame tensorboard stable-baselines3[extra] (will create the txt folder later)
 >
 >py -m venv .venv (creates the venv)
 >
 >Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass (this allows the scripts to run for the python virtual enviroment temporarily)
 >
 >.venv\Scripts\activate (activates venv)
+>
+>download dependencies (requirements.txt)
 >
 >Training:
 >py train.py --scenario [scenario] --reward [reward model] --timesteps [timesteps]
@@ -48,13 +49,13 @@ For a guide on how to install vizdoom you can go here https://github.com/Farama-
 >python eval.py --scenario defend_the_line --reward kill_fast --episodes 5 --render 1 
 
 #### to run the already trained models on Windows
->downloads dependencies
->
 >py -m venv .venv 
 >
 >Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 >
 >.venv\Scripts\activate
+>
+>download dependencies (requirements.txt)
 >
 >py eval.py --scenario defend_the_line --reward kill_fast --episodes 5 --render 1
 
